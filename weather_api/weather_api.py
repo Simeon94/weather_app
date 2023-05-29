@@ -20,6 +20,8 @@
 ######################################################################################################
 
 import tkinter as tk
+from ttkbootstrap.constants import *
+from ttkbootstrap.scrolled import ScrolledFrame
 import requests
 from tkinter import messagebox
 from PIL import ImageTk, Image
@@ -42,9 +44,13 @@ def get_weather(city):
     description = weather['weather'][0]['description']
     city = weather['name']
     country = weather['sys']['country']
+    print(weather)
+    # Placeholder image
+    image_url = "https://image.shutterstock.com/image-photo/adventure-on-mountain-bike-260nw-152465639.jpg"
     
     # Get the icon URL and return all the weather information
-    icon_url = f"http://openweathermap.org/img/wn/{icon_id}10d@2x.png"
+
+    icon_url = f"http://openweathermap.org/img/wn/{icon_id}@2x.png"
     return (icon_url, temperature, description, city, country)
 
 
@@ -58,9 +64,16 @@ def search():
     # If the city is found, unpack the weather information
     icon_url, temperature, description, city, country = result
     location_label.configure(text=f"{city}, {country}")
-
-    # get the weather icon image froom the URL and update the icon label
-    image = Image.open(requests.get(icon_url, stream=True).raw)
+    
+    # get the weather icon image from the URL and update the icon label
+    try:
+        image = Image.open(requests.get(icon_url, stream=True).raw) # exception handling
+    except Exception as err:
+        print(err)
+        # placeholder url
+        placeholder_url = "https://image.shutterstock.com/image-photo/adventure-on-mountain-bike-260nw-152465639.jpg"
+        image = Image.open(requests.get(placeholder_url, stream=True).raw)
+    
     icon = ImageTk.PhotoImage(image)
     icon_label.configure(image=icon)
     icon_label.image = icon
@@ -73,28 +86,32 @@ root = ttkbootstrap.Window(themename="morph")
 root.title("Weather App")
 root.geometry("400x400")
 
+#Scrollbar
+sf = ScrolledFrame(root, autohide=True)
+sf.pack(fill=BOTH, expand=YES, padx=10, pady=10)
+
 # Entry widget -> to enter the city name
-city_entry = ttkbootstrap.Entry(root, font="Helvetica, 18")
+city_entry = ttkbootstrap.Entry(sf, font="Helvetica, 18")
 city_entry.pack(pady=10)
 
 # Button widget -> to search for the weather information
-search_button = ttkbootstrap.Button(root, text="Search", command="search", bootstyle="warning")
+search_button = ttkbootstrap.Button(sf, text="Search", command=search, bootstyle="warning")
 search_button.pack(pady=10)
 
 # Label widget -> to show the city / country name
-location_label = tk.Label(root,font="Helvetica, 25")
+location_label = tk.Label(sf,font="Helvetica, 25")
 location_label.pack()
 
 # Label widget -> to show the weather icon
-icon_label = tk.Label(root)
+icon_label = tk.Label(sf)
 icon_label.pack()
 
 # Label widget -> to show the temperature
-temperature_label = tk.Label(root, font="Helvetica, 20")
+temperature_label = tk.Label(sf, font="Helvetica, 20")
 temperature_label.pack()
 
 # Label widget -> to show the weather description
-description_label = tk.Label(root, font="Helvetica, 20")
+description_label = tk.Label(sf, font="Helvetica, 20")
 description_label.pack()
 
 root.mainloop()
