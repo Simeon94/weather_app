@@ -1,23 +1,3 @@
-
-# ################ This works ##################################################
-# # import requests
-
-# # api_key = '30d4741c779ba94c470ca1f63045390a'
-
-# # user_input = input("Enter city: ")
-
-# # weather_data = requests.get(
-# #     f"https://api.openweathermap.org/data/2.5/weather?q={user_input}&units=imperial&APPID={api_key}")
-
-# # if weather_data.json()['cod'] == '404':
-# #     print("No City Found")
-# # else:
-# #     weather = weather_data.json()['weather'][0]['main']
-# #     temp = round(weather_data.json()['main']['temp'])
-
-# #     print(f"The weather in {user_input} is: {weather}")
-# #     print(f"The temperature in {user_input} is: {temp}ºF")
-# ######################################################################################################
 import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.scrolled import ScrolledFrame
@@ -25,7 +5,6 @@ import requests
 from tkinter import messagebox
 from PIL import ImageTk, Image
 import ttkbootstrap
-import time
 
 # Function to get weather for a city
 class Weather_app:
@@ -68,25 +47,25 @@ class Weather_app:
         url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={self.API_key}"
 
         res = requests.get(url)
-
-        if res.status_code == 404:
+        
+        if res.status_code != 404:
+            # Parse the response JSON to get weather information
+            weather = res.json()
+            icon_id = weather["weather"][0]["icon"]
+            temperature = weather["main"]["temp"] - 273.15
+            description = weather["weather"][0]["description"]
+            city = weather["name"]
+            country = weather["sys"]["country"]
+            print(weather)
+        
+            # Get the icon URL and return all the weather information
+            icon_url = f"http://openweathermap.org/img/wn/{icon_id}@2x.png"
+            return (icon_url, temperature, description, city, country)
+            
+        else:
             messagebox.showerror("Error", "City not found, try again")
             return None
         
-        # Parse the response JSON to get weather information
-        weather = res.json()
-        icon_id = weather['weather'][0]['icon']
-        temperature = weather['main']['temp'] - 273.15
-        description = weather['weather'][0]['description']
-        city = weather['name']
-        country = weather['sys']['country']
-        print(weather)
-    
-        # Get the icon URL and return all the weather information
-        icon_url = f"http://openweathermap.org/img/wn/{icon_id}@2x.png"
-        return (icon_url, temperature, description, city, country)
-
-
     # Function to search weather for a city
     def search(self):
         #self.city_entry= "Lagos"
@@ -117,10 +96,6 @@ class Weather_app:
         self.description_label.configure(text=f"Description: {description}")
 
     def run(self):
-        self.get_weather("Lagos")
-        time.sleep(5)
-        self.search()
-        time.sleep(5)
         self.root.mainloop()
 
 weather_info = Weather_app()

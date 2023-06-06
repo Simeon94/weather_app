@@ -26,3 +26,26 @@
 # else:
 #     print("Error occurred:", response.status_code)
 
+# def reverse_number(a):
+#     #a =200
+#     new_list =[]
+#     for i in range(1,a+1):
+#         #print(i)
+#         new_list.append(str(i))
+#         #print(new_list)
+#         for j in range(len(new_list)):
+#             soln= "".join(new_list[-1::-1])
+#     return soln
+# print(reverse_number(5))
+
+def reverse_number_pattern(start_number):
+    for i in range(start_number, 0, -1):  # Iterate from start_number to 1
+        for j in range(i, 0, -1):  # Iterate from i to 1
+            print(j, end='')
+        print()  # Print a new line after each row
+
+# Test the function
+start_number = int(input("Enter the starting number: "))
+reverse_number_pattern(start_number)
+
+print(reverse_number_pattern(5))
